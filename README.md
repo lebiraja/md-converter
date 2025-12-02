@@ -1,143 +1,114 @@
 # md-converter
 
-Convert Markdown files to **DOCX**, **PDF**, **HTML**, and **TXT** formats with full GitHub Flavored Markdown support.
-
-## Features
-
-- 📄 **Multiple Output Formats**: DOCX, PDF, HTML, TXT
-- 🎨 **Preserves Formatting**: Headings, bold, italic, strikethrough
-- 📊 **GitHub Flavored Markdown**: Tables, task lists, code blocks
-- 🎯 **Syntax Highlighting**: Beautiful code blocks in HTML and PDF
-- 🚀 **Fast & Easy**: Simple CLI commands
-- 🌐 **Web API**: REST API for integration
+A command-line tool for converting Markdown files to DOCX, PDF, HTML, and plain text. Supports GitHub Flavored Markdown including tables, task lists, and syntax-highlighted code blocks.
 
 ## Installation
 
-### Prerequisites
-
-- **Node.js 18+**
-- **Chrome/Chromium** (for PDF generation)
-
-### Install via npm
+You'll need Node.js 18 or higher. For PDF conversion, you'll also need Chrome or Chromium installed.
 
 ```bash
 npm install -g md-converter
 ```
 
-### Verify Installation
-
-```bash
-md-converter --version
-```
-
 ## Usage
 
-### Basic Command
+Basic usage is straightforward:
 
-```bash
-md-converter <input.md> -f <format>
-```
-
-### Examples
-
-**Convert to Word Document**
 ```bash
 md-converter document.md -f docx
 ```
 
-**Convert to PDF**
+This converts `document.md` to `document.docx` in the same directory.
+
+### Examples
+
+Convert to different formats:
+
 ```bash
 md-converter document.md -f pdf
-```
-
-**Convert to HTML**
-```bash
 md-converter document.md -f html
-```
-
-**Convert to Plain Text**
-```bash
 md-converter document.md -f txt
 ```
 
-**Specify Output File**
+Specify a custom output path:
+
 ```bash
-md-converter document.md -f pdf -o report.pdf
+md-converter document.md -f pdf -o reports/output.pdf
 ```
 
-**Verbose Output**
+See what's happening with verbose output:
+
 ```bash
 md-converter document.md -f docx -v
 ```
 
-### Command Options
+### Available Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-f, --format <format>` | Output format: `docx`, `pdf`, `html`, `txt` | *Required* |
-| `-o, --output <path>` | Output file path | Same name as input |
-| `--no-syntax-highlight` | Disable code syntax highlighting | Enabled |
-| `--page-size <size>` | PDF page size: `A4` or `Letter` | `A4` |
-| `-v, --verbose` | Show detailed output | Disabled |
-| `-h, --help` | Display help | |
-| `-V, --version` | Show version number | |
+```
+-f, --format <format>     Output format: docx, pdf, html, txt (required)
+-o, --output <path>       Custom output file path
+--no-syntax-highlight     Disable code syntax highlighting
+--page-size <size>        PDF page size: A4 or Letter (default: A4)
+-v, --verbose            Show detailed output
+-h, --help               Display help
+-V, --version            Show version number
+```
 
-## Supported Markdown Features
+## What Gets Converted
 
-✅ Headings (H1-H6)
-✅ **Bold**, *italic*, ~~strikethrough~~
-✅ Code blocks with syntax highlighting
-✅ `Inline code`
-✅ Tables
-✅ Task lists `[ ]` and `[x]`
-✅ Ordered and unordered lists
-✅ Blockquotes
-✅ Links and images
-✅ Horizontal rules
+The converter handles standard Markdown plus GitHub Flavored Markdown extensions:
+
+- Headings (H1 through H6)
+- Text formatting: **bold**, *italic*, ~~strikethrough~~
+- Code blocks with syntax highlighting for common languages
+- Inline `code`
+- Tables
+- Task lists with `[ ]` and `[x]` checkboxes
+- Ordered and unordered lists
+- Blockquotes
+- Links and images
+- Horizontal rules
+
+## Output Formats
+
+**DOCX (Microsoft Word)**
+Creates proper Word documents with heading styles (in orange), body text, tables with borders, and monospaced code blocks. Compatible with Word 2007 and later.
+
+**PDF**
+Generates PDFs using headless Chrome for accurate rendering. Includes syntax-highlighted code blocks and supports A4 or Letter page sizes with 1-inch margins.
+
+**HTML**
+Produces standalone HTML files with embedded CSS. The output is responsive, print-friendly, and includes syntax highlighting for code blocks.
+
+**TXT (Plain Text)**
+Extracts plain text while preserving document structure. Tables are formatted as ASCII art.
 
 ## Web API
 
-Start the server:
+If you need to convert markdown programmatically, there's a built-in REST API.
+
+First, clone and run the server:
 
 ```bash
-# Clone the repository
 git clone https://github.com/jabezpauls/md-converter.git
 cd md-converter
 npm install
 npm run server
 ```
 
-Server runs on `http://localhost:3000`
+The server starts on `http://localhost:3000`.
 
-### API Endpoints
+### Convert via JSON
 
-#### POST /api/v1/convert
-Convert markdown via JSON body
-
-**Request:**
 ```bash
 curl -X POST http://localhost:3000/api/v1/convert \
   -H "Content-Type: application/json" \
-  -d '{"markdown": "# Hello\n\nWorld", "format": "docx"}' \
+  -d '{"markdown": "# Hello World", "format": "docx"}' \
   --output output.docx
 ```
 
-**Request Body:**
-```json
-{
-  "markdown": "# Your markdown here",
-  "format": "docx",
-  "options": {
-    "syntaxHighlight": true,
-    "pageSize": "A4"
-  }
-}
-```
+### Upload a file
 
-#### POST /api/v1/convert/file
-Convert uploaded markdown file
-
-**Request:**
 ```bash
 curl -X POST http://localhost:3000/api/v1/convert/file \
   -F "file=@document.md" \
@@ -145,124 +116,76 @@ curl -X POST http://localhost:3000/api/v1/convert/file \
   --output output.pdf
 ```
 
-#### GET /api/v1/health
-Health check endpoint
+### Other endpoints
 
-#### GET /api/v1/formats
-List all supported formats
+- `GET /api/v1/health` - Health check
+- `GET /api/v1/formats` - List supported formats
 
-## Programmatic Usage
+## Using in Node.js
 
 ```javascript
 import { convert } from 'md-converter';
+import { writeFile } from 'fs/promises';
 
 const markdown = '# Hello World\n\nThis is **bold** text.';
 const buffer = await convert(markdown, 'docx');
 
-// Write to file
-import { writeFile } from 'fs/promises';
 await writeFile('output.docx', buffer);
 ```
 
-## Output Styling
-
-### DOCX
-- Heading styles: Heading1, Heading2, Heading3 (orange color)
-- Body text with proper spacing
-- Tables with borders
-- Code blocks with monospace font (Consolas)
-
-### PDF
-- Rendered via Chrome for high fidelity
-- Syntax highlighted code blocks
-- Configurable page size (A4/Letter)
-- 1-inch margins
-
-### HTML
-- Clean, responsive design
-- Syntax highlighted code blocks
-- Mobile-friendly
-- Print-optimized CSS
-
-### TXT
-- Plain text extraction
-- ASCII table formatting
-- Preserved structure
-
-## Examples
-
-See the `examples/` directory for sample markdown files and their converted outputs.
-
-## Requirements
-
-- **Node.js**: Version 18 or higher
-- **Chrome/Chromium**: Required for PDF generation
-  - Linux: `apt install chromium-browser` or `apt install google-chrome-stable`
-  - macOS: Install Chrome from official website
-  - Windows: Install Chrome from official website
-
 ## Troubleshooting
 
-### Chrome not found for PDF generation
+**PDF conversion fails with "Chrome not found"**
 
-Set the `CHROME_PATH` environment variable:
+The converter needs Chrome or Chromium to generate PDFs. Install it via your package manager:
+
+```bash
+# Ubuntu/Debian
+sudo apt install chromium-browser
+
+# Arch Linux
+sudo pacman -S chromium
+
+# macOS
+brew install --cask google-chrome
+```
+
+If Chrome is installed in a non-standard location, set the path:
 
 ```bash
 export CHROME_PATH=/path/to/chrome
 md-converter document.md -f pdf
 ```
 
-### Permission errors on Linux
+**Permission errors on Linux**
 
-If you get permission errors, ensure Chrome can run in sandboxed mode or install required dependencies:
+Some Linux distributions need additional dependencies for Chrome to run in headless mode:
 
 ```bash
-sudo apt-get install -y \
-  libgbm1 \
-  libasound2 \
-  libatk-bridge2.0-0 \
-  libgtk-3-0 \
-  libnss3
+sudo apt-get install -y libgbm1 libasound2 libatk-bridge2.0-0 libgtk-3-0 libnss3
 ```
 
 ## Development
 
 ```bash
-# Clone repository
 git clone https://github.com/jabezpauls/md-converter.git
 cd md-converter
-
-# Install dependencies
 npm install
-
-# Build
 npm run build
-
-# Run tests
-npm test
-
-# Start development mode
-npm run dev
 ```
 
-## Contributing
+Run the CLI locally:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```bash
+node dist/cli/index.js document.md -f pdf
+```
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
-
-## Author
-
-Created by Jabez Pauls
+MIT
 
 ## Links
 
-- **GitHub**: https://github.com/jabezpauls/md-converter
-- **Issues**: https://github.com/jabezpauls/md-converter/issues
-- **npm**: https://www.npmjs.com/package/md-converter
-
----
-
-**Made with ❤️ using Node.js and TypeScript**
+- Repository: https://github.com/jabezpauls/md-converter
+- Issues: https://github.com/jabezpauls/md-converter/issues
+- npm: https://www.npmjs.com/package/md-converter
