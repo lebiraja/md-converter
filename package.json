@@ -1,5 +1,5 @@
 {
-  "name": "md-converter",
+  "name": "@jabezpauls/md-converter",
   "version": "1.0.0",
   "description": "Convert Markdown to DOCX, PDF, TXT, or HTML",
   "type": "module",

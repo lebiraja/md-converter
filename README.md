@@ -7,7 +7,7 @@ A command-line tool for converting Markdown files to DOCX, PDF, HTML, and plain 
 You'll need Node.js 18 or higher. For PDF conversion, you'll also need Chrome or Chromium installed.
 
 ```bash
-npm install -g md-converter
+npm install -g @jabezpauls/md-converter
 ```
 
 ## Usage
@@ -124,7 +124,7 @@ curl -X POST http://localhost:3000/api/v1/convert/file \
 ## Using in Node.js
 
 ```javascript
-import { convert } from 'md-converter';
+import { convert } from '@jabezpauls/md-converter';
 import { writeFile } from 'fs/promises';
 
 const markdown = '# Hello World\n\nThis is **bold** text.';
@@ -188,4 +188,4 @@ MIT
 
 - Repository: https://github.com/jabezpauls/md-converter
 - Issues: https://github.com/jabezpauls/md-converter/issues
-- npm: https://www.npmjs.com/package/md-converter
+- npm: https://www.npmjs.com/package/@jabezpauls/md-converter
