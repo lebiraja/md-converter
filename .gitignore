@@ -1,0 +1,44 @@
+# Claude Code
+.claude/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Test output
+test-output/
+*.test.docx
+*.test.pdf
+*.test.html
+*.test.txt
+
+# Temporary files
+*.tmp
+tmp/
+temp/
+
+# npm package
+*.tgz
+
+# OS
+Thumbs.db
