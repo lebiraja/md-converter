@@ -1,7 +1,6 @@
 import { existsSync } from 'fs';
 import { resolve, basename, extname, dirname, join } from 'path';
 import chalk from 'chalk';
-import ora from 'ora';
 import { converter } from '../../core/converter.js';
 import { FORMAT_INFO, type OutputFormat } from '../../types/index.js';
 import { pdfTransformer } from '../../core/transformers/index.js';
@@ -14,7 +13,8 @@ interface ConvertCommandOptions {
   verbose?: boolean;
 }
 
-const validFormats = ['docx', 'pdf', 'txt', 'html'] as const;
+const validFormats = ['docx', 'pdf', 'txt', 'html', 'md'] as const;
+const validSourceExtensions = ['.pdf', '.docx'];
 
 function isValidFormat(format: string): format is OutputFormat {
   return validFormats.includes(format as OutputFormat);
@@ -43,6 +43,16 @@ export async function convertCommand(
     process.exit(1);
   }
 
+  // Reverse conversion (-> Markdown) requires a supported binary source
+  if (format === 'md' && !validSourceExtensions.includes(extname(resolvedInput).toLowerCase())) {
+    console.error(
+      chalk.red(
+        `Error: Cannot convert "${extname(resolvedInput)}" to Markdown. Supported source formats: ${validSourceExtensions.join(', ')}`
+      )
+    );
+    process.exit(1);
+  }
+
   // Determine output path
   const formatInfo = FORMAT_INFO[format];
   const outputPath = output
@@ -57,6 +67,8 @@ export async function convertCommand(
 
   console.log(`Converting to ${formatInfo.name}...`);
 
+  let exitCode = 0;
+
   try {
     await converter.convertFile(resolvedInput, outputPath, {
       format,
@@ -65,8 +77,8 @@ export async function convertCommand(
     });
 
     console.log(chalk.green(`✔ Successfully converted to ${outputPath}`));
-    process.exit(0);
   } catch (error) {
+    exitCode = 1;
     console.log(chalk.red('✖ Conversion failed'));
 
     if (error instanceof Error) {
@@ -75,7 +87,11 @@ export async function convertCommand(
         console.error(chalk.gray(error.stack));
       }
     }
-
-    process.exit(1);
+  } finally {
+    if (format === 'pdf') {
+      await pdfTransformer.dispose();
+    }
   }
+
+  process.exit(exitCode);
 }
