@@ -27,8 +27,7 @@ function createTurndown(): TurndownService {
 export class DOCXIngester implements Ingester {
   async ingest(input: Buffer): Promise<string> {
     // mammoth produces the cleanest HTML; turndown then yields high-fidelity Markdown.
-    // Images are emitted as alt-only placeholders to keep output text-focused (no base64).
-    // Drop embedded image binaries — emit a src-less placeholder so output stays
+    // Embedded image binaries are dropped to a src-less placeholder so output stays
     // text-focused (no base64 blobs, no LLM captioning).
     const { value: html } = await mammoth.convertToHtml(
       { buffer: input },
